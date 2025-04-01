@@ -6,7 +6,7 @@ Data: 31 de março de 2025
 
 ## Sumário Executivo
 
-Este relatório apresenta os resultados do teste de penetração realizado na infraestrutura e aplicações da máquina de CTF da TryHackMe no dia 30/03/2025.
+Este relatório apresenta os resultados do teste de intrusão realizado na infraestrutura e aplicações da máquina de CTF da TryHackMe no dia 30/03/2025.
 
 ```
 https://tryhackme.com/room/plottedtms
@@ -19,7 +19,7 @@ Durante a avaliação, foram identificadas **4 vulnerabilidades**, sendo **todas
 
 ## Metodologia
 
-O teste de penetração foi executado seguindo as fases do PTES:
+O teste de intrusão foi executado seguindo as fases do PTES:
 
 1. **Coleta de Informações**
    - Reconhecimento ativo
@@ -28,7 +28,6 @@ O teste de penetração foi executado seguindo as fases do PTES:
 2. **Modelagem de Ameaças**
    - Identificação de ativos críticos
    - Análise de potenciais vetores de ataque
-   - Priorização de alvos
 
 3. **Análise de Vulnerabilidades**
    - Varreduras automatizadas
@@ -73,6 +72,22 @@ O teste de penetração foi executado seguindo as fases do PTES:
 | Upload de Arquivos sem Restrição          | 1          | 25%         |
 | Escalonamento de Privilégios         | 2          | 50%         |
 | Total                          | 4          | 100%       |
+
+## Coleta de Informações
+
+### 1. Scan de rede - Nmap
+
+![nmap](1-nmap.png)
+
+**Descrição:**  
+Foi identificado 3 portas abertas na máquina, sendo elas 22 com um serviço ssh, 80 e 445 com serviços Apache HTTP.
+
+### 2. Enumeração de diretórios - FFUF
+
+![ffuf](2-ffuf.png)
+
+**Descrição**  
+Utilizando ffuf, foi possível descobrir um diretório importante (**/management**) e que por meio dele, deu acesso a uma aplicação vulnerável. 
 
 ## Vulnerabilidades Detalhadas
 
@@ -147,7 +162,7 @@ O primeiro passo é um listener na máquina atacante usando penelope com a porta
 python3 penelope.py PORTA
 ```
 
-E então,ao realizar o upload de um arquivo PHP malicioso contendo um web shell na página de cadastro de usuários
+E então,ao realizar o upload de um arquivo PHP malicioso contendo um web shell na página de cadastro de usuários (obs: foi utiliado a reverse shell pentest monkey, disponível para uso no github)
 
 ```
 
@@ -177,6 +192,9 @@ Content-Type: application/x-php
 
 ?>
 ```
+Shell sendo recebida na máquina atacante:
+
+![shell1](7-shell_recebida.png)
 
 **Impacto:**  
 Esta vulnerabilidade permite que um atacante:
@@ -228,7 +246,6 @@ Verificação das permissões mostrou que o usuário www-data tem permissões pa
 
 ```bash
 www-data@plotted:~$ ls -la /var/www/
-drwxr-xr-x  2 www-data www-data 4096 Oct 28  2021 scripts
 ```
 
 Com essa informações, podemos executar:
@@ -236,7 +253,7 @@ Com essa informações, podemos executar:
 rm -r /var/www/scripts
 ```
 
-Recebmos uma mensagem de permissão negada, mas o arquivo foi removido, então podemos acessar a pasta e recriar o arquivo backup.sh
+Recebemos uma mensagem de permissão negada, mas o arquivo foi removido, então podemos acessar a pasta e recriar o arquivo backup.sh
 ```bash 
 cd scripts;
 nano backup.sh
@@ -254,6 +271,18 @@ Ao recriar o arquivo backup.sh, podemos inicar um listener com o penelope na má
 python3 penelope.py 8889
 ```
 
+Listando permissões de pasta e arquivo:
+![rm_pasta](9-removendo_pasta_criando_shell.png)
+
+Editando arquivo backup.sh:
+![nano](11-nano-shell_certa.png)
+
+Recebendo shell como plot_admin
+
+![shell_plot](12-shell_recebida_plot_admin.png)
+
+Alcançando primeira flag do desafio:
+![flag_1](13-flag_1.png)
 
 **Impacto:**  
 Esta vulnerabilidade permite que um atacante:
@@ -309,7 +338,9 @@ Com essa informações, podemos executar:
 doas -u root enc -in /root/root.txt
 ```
 
-Chegando assim a nossa flag final do CTF
+Chegando assim a nossa flag final do CTF:
+
+![root_flag](15-root_flag.png)
 
 **Impacto:**  
 Esta vulnerabilidade permite que um atacante:
@@ -319,6 +350,7 @@ Esta vulnerabilidade permite que um atacante:
 - Modifique configurações críticas do sistema comprometendo sua integridade
 - Estabeleça persistência no sistema instalando backdoors em nível de sistema
 - Contorne completamente o modelo de segurança do sistema operacional
+- Maneiras de explorar openssl -> https://gtfobins.github.io/gtfobins/openssl/
 
 **Recomendações:**  
 1. Revisar e corrigir a configuração do arquivo /etc/doas.conf seguindo o princípio de menor privilégio
@@ -348,11 +380,11 @@ Esta vulnerabilidade permite que um atacante:
 5. **Implementar controles de validação de entrada rigorosos** em todas as interfaces web, particularmente em formulários de login e funcionalidades de upload.
 6. **Realizar auditorias regulares de configuração** em todos os sistemas para identificar permissões inadequadas e configurações inseguras antes que possam ser exploradas.
 7. **Implementar monitoramento em tempo real de atividades anômalas**, especialmente ações administrativas e tentativas de escalonamento de privilégios.
-8. **Conduzir testes de penetração regulares** para avaliar continuamente a segurança da infraestrutura.
+8. **Conduzir testes de intrusão regulares** para avaliar continuamente a segurança da infraestrutura.
 
 ## Conclusão
 
-O teste de penetração identificou várias vulnerabilidades que, se exploradas, poderiam comprometer a confidencialidade, integridade e disponibilidade dos sistemas da máquina. Recomendo que as vulnerabilidades sejam tratadas com prioridade urgente.
+O teste de intrusão identificou várias vulnerabilidades que, se exploradas, poderiam comprometer a confidencialidade, integridade e disponibilidade dos sistemas da máquina. Recomendo que as vulnerabilidades sejam tratadas com prioridade urgente.
 
 ## Apêndices
 
